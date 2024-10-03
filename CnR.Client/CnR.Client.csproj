@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-Default</AnalysisLevel>
+    <GenerateSatelliteAssembliesForCore>true</GenerateSatelliteAssembliesForCore>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AllOutputFiles Include="$(OutputPath)\publish\**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AltV.Net.Client" />
+    <PackageReference Include="AltV.Net.Client.Async" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CnR.Shared\CnR.Shared.csproj" />
+  </ItemGroup>
+
+  <Target Name="CopyFiles" AfterTargets="publish">
+    <PropertyGroup>
+      <TargetLocation>..\..\..\resources\client\bin</TargetLocation>
+    </PropertyGroup>
+    <Copy Condition=" '$(TargetLocation)' != '' " SourceFiles="@(AllOutputFiles)" DestinationFolder="$(TargetLocation)\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
