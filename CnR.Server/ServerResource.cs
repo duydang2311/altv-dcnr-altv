@@ -1,5 +1,8 @@
 ﻿using System.Reflection;
+using AltV.Net;
 using AltV.Net.Async;
+using AltV.Net.Elements.Entities;
+using CnR.Server.Players.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -16,7 +19,7 @@ public sealed class ServerResource : AsyncResource
         builder.UseContentRoot(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!);
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<IHostLifetime, ServerResourceLifetime>();
+            services.AddSingleton<IHostLifetime, ServerResourceLifetime>().AddPlayerFeatures();
         });
 
         host = builder.Build();
@@ -30,6 +33,11 @@ public sealed class ServerResource : AsyncResource
     public override void OnStop()
     {
         StopAsync().Wait();
+    }
+
+    public override IEntityFactory<IPlayer> GetPlayerFactory()
+    {
+        return host.Services.GetRequiredService<ICharacterFactory>();
     }
 
     private async Task StartAsync()
