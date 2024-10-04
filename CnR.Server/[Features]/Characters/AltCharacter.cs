@@ -5,9 +5,9 @@ using CnR.Server.Players.Abstractions;
 
 namespace CnR.Server.Characters;
 
-public sealed class Character(ICore core, IntPtr nativePointer, uint id)
+public sealed class AltCharacter(ICore core, IntPtr nativePointer, uint id)
     : AsyncPlayer(core, nativePointer, id),
-        ICharacter
+        IAltCharacter
 {
-    CharacterId? ICharacter.Id { get; set; }
+    CharacterId? IAltCharacter.Id { get; set; }
 }

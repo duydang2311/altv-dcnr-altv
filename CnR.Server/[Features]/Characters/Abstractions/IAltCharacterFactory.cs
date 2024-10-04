@@ -3,4 +3,4 @@ using AltV.Net.Elements.Entities;
 
 namespace CnR.Server.Players.Abstractions;
 
-public interface ICharacterFactory : IEntityFactory<IPlayer> { }
+public interface IAltCharacterFactory : IEntityFactory<IPlayer> { }
