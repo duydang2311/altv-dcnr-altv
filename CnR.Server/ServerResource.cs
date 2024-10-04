@@ -2,7 +2,9 @@
 using AltV.Net;
 using AltV.Net.Async;
 using AltV.Net.Elements.Entities;
+using CnR.Server.Infrastructure.Persistence.Abstractions;
 using CnR.Server.Players.Abstractions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -17,10 +19,26 @@ public sealed class ServerResource : AsyncResource
         var builder = Host.CreateDefaultBuilder();
 
         builder.UseContentRoot(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!);
-        builder.ConfigureServices(services =>
+        builder.ConfigureAppConfiguration(b =>
         {
-            services.AddSingleton<IHostLifetime, ServerResourceLifetime>().AddPlayerFeatures();
+            b.Sources.Clear();
+            b.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+            b.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
         });
+        builder.ConfigureServices(
+            (context, services) =>
+            {
+                services
+                    .AddSingleton<IHostLifetime, ServerResourceLifetime>()
+                    .AddPersistence(
+                        context.Configuration.GetSection(DbOptions.Section).Get<DbOptions>()
+                            ?? throw new InvalidOperationException(
+                                "Missing configuration for \"Db\" section in appsettings"
+                            )
+                    )
+                    .AddPlayerFeatures();
+            }
+        );
 
         host = builder.Build();
     }

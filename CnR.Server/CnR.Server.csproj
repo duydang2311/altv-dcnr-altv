@@ -13,6 +13,7 @@
     <PackageReference Include="AltV.Net" />
     <PackageReference Include="AltV.Net.Async" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
   <ItemGroup>
