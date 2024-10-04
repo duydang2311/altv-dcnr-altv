@@ -4,7 +4,7 @@ using CnR.Server.Domain.Models;
 
 namespace CnR.Server.Players.Abstractions;
 
-public interface ICharacter : IPlayer, IAsyncConvertible<IPlayer>
+public interface IAltCharacter : IPlayer, IAsyncConvertible<IPlayer>
 {
     new CharacterId? Id { get; set; }
 }
