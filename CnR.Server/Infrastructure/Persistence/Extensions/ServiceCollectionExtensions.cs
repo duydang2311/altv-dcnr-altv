@@ -11,7 +11,6 @@ public static partial class ServiceCollectionExtensions
         DbOptions options
     )
     {
-        Console.WriteLine("Add persistence: " + options);
         serviceCollection.AddPooledDbContextFactory<Db>(b =>
             b.UseNpgsql(
                     options.ConnectionString,
