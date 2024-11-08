@@ -5,12 +5,22 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <PackageVersion Include="AltV.Net" Version="16.3.4" />
-    <PackageVersion Include="AltV.Net.Async" Version="16.3.4" />
-    <PackageVersion Include="AltV.Net.Client" Version="16.3.4" />
-    <PackageVersion Include="AltV.Net.Client.Async" Version="16.3.4" />
-    <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
+    <PackageVersion Include="AltV.Net" Version="16.4.0" />
+    <PackageVersion Include="AltV.Net.Async" Version="16.4.0" />
+    <PackageVersion Include="AltV.Net.Client" Version="16.4.0" />
+    <PackageVersion Include="AltV.Net.Client.Async" Version="16.4.0" />
+    <PackageVersion Include="AltV.Net.Shared" Version="16.4.0" />
+    <PackageVersion Include="LanguageExt.Core" Version="4.4.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="8.0.1" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
+    <PackageVersion Include="OneOf" Version="3.0.271" />
+    <PackageVersion Include="System.Net.Http" Version="4.3.4" />
+    <PackageVersion Include="System.Net.Http.Json" Version="8.0.1" />
   </ItemGroup>
 </Project>

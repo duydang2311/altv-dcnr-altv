@@ -9,8 +9,8 @@ default *args:
 restore:
     dotnet restore
 
-optimize:
-    dotnet ef dbcontext optimize --project CnR.Server -n CnR.Server.SharedKernel.Persistence.CompiledModels -o ../CnR.Server.SharedKernel/Persistence/CompiledModels
+add-mig +arg:
+    dotnet ef migrations add {{arg}} --project CnR.Server -o Infrastructure/Persistence/Migrations
 
 mig +arg:
     dotnet ef migrations {{arg}} --project CnR.Server

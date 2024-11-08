@@ -29,6 +29,7 @@ public sealed class ServerResource : AsyncResource
             (context, services) =>
             {
                 services
+                    .AddHttpClient()
                     .AddSingleton<IHostLifetime, ServerResourceLifetime>()
                     .AddPersistence(
                         context.Configuration.GetSection(DbOptions.Section).Get<DbOptions>()
@@ -36,6 +37,7 @@ public sealed class ServerResource : AsyncResource
                                 "Missing configuration for \"Db\" section in appsettings"
                             )
                     )
+                    .AddAccountFeatures()
                     .AddPlayerFeatures();
             }
         );
