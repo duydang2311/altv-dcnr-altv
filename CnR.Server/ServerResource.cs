@@ -2,8 +2,8 @@
 using AltV.Net;
 using AltV.Net.Async;
 using AltV.Net.Elements.Entities;
+using CnR.Server.Features.Characters.Abstractions;
 using CnR.Server.Infrastructure.Persistence.Abstractions;
-using CnR.Server.Players.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

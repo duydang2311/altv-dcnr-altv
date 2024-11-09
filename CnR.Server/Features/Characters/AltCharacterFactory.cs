@@ -1,8 +1,8 @@
 using AltV.Net;
 using AltV.Net.Elements.Entities;
-using CnR.Server.Players.Abstractions;
+using CnR.Server.Features.Characters.Abstractions;
 
-namespace CnR.Server.Characters;
+namespace CnR.Server.Features.Characters;
 
 public sealed class AltCharacterFactory : IAltCharacterFactory
 {

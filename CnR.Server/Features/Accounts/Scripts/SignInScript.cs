@@ -5,8 +5,8 @@ using AltV.Net.Elements.Entities;
 using CnR.Server.Common;
 using CnR.Server.Domain.Models;
 using CnR.Server.Features.Accounts.Abstractions;
+using CnR.Server.Features.Characters.Abstractions;
 using CnR.Server.Infrastructure.Persistence.Abstractions;
-using CnR.Server.Players.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CnR.Server.Features.Accounts.Scripts;

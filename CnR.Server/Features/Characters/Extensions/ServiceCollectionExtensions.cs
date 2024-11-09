@@ -1,5 +1,5 @@
-using CnR.Server.Characters;
-using CnR.Server.Players.Abstractions;
+using CnR.Server.Features.Characters;
+using CnR.Server.Features.Characters.Abstractions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

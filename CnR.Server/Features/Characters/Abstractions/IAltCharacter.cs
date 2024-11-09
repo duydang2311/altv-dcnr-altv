@@ -2,7 +2,7 @@ using AltV.Net.Async;
 using AltV.Net.Elements.Entities;
 using CnR.Server.Domain.Models;
 
-namespace CnR.Server.Players.Abstractions;
+namespace CnR.Server.Features.Characters.Abstractions;
 
 public interface IAltCharacter : IPlayer, IAsyncConvertible<IPlayer>
 {
