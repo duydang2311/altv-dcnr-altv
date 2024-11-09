@@ -1,3 +1,4 @@
+using AltV.Net;
 using AltV.Net.Client;
 using AltV.Net.Client.Async;
 using AltV.Net.Client.Elements.Interfaces;
@@ -30,9 +31,10 @@ public sealed class ClientResource : AsyncResource
 
     public override void OnStop() { }
 
-    private Task StartAsync()
+    private async Task StartAsync()
     {
-        return Task.WhenAll(
+        AltExtensions.RegisterAdapters();
+        await Task.WhenAll(
             serviceProvider
                 .GetServices<IHostedService>()
                 .Select(a => a.StartAsync(CancellationToken.None))

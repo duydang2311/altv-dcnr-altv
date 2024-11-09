@@ -2,20 +2,16 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace CnR.Shared.Effects;
 
-public readonly struct Effect<TSuccess, TError>
+public readonly struct Effect<TSuccess, TError>(bool isSuccess, TSuccess success, TError error)
 {
-    private readonly TSuccess success;
-    private readonly TError error;
-    private readonly bool isSuccess;
+    private readonly TSuccess success = success;
+    private readonly TError error = error;
+    private readonly bool isSuccess = isSuccess;
 
-    public Effect(bool isSuccess, TSuccess success, TError error)
-    {
-        this.isSuccess = isSuccess;
-        this.success = success;
-        this.error = error;
-    }
-
-    public bool TryGetSuccess([NotNullWhen(true)] out TSuccess? success, [NotNullWhen(false)] out TError? error)
+    public bool TryGetSuccess(
+        [NotNullWhen(true)] out TSuccess? success,
+        [NotNullWhen(false)] out TError? error
+    )
     {
         if (isSuccess)
         {
@@ -28,7 +24,10 @@ public readonly struct Effect<TSuccess, TError>
         return false;
     }
 
-    public bool TryGetError([NotNullWhen(true)] out TError? error, [NotNullWhen(false)] out TSuccess? success)
+    public bool TryGetError(
+        [NotNullWhen(true)] out TError? error,
+        [NotNullWhen(false)] out TSuccess? success
+    )
     {
         if (!isSuccess)
         {
@@ -41,12 +40,15 @@ public readonly struct Effect<TSuccess, TError>
         return false;
     }
 
-    public static implicit operator Effect<TSuccess, TError>(SuccessEffect<TSuccess> eff) => new Effect<TSuccess, TError>(true, eff.Value, default!);
-    public static implicit operator Effect<TSuccess, TError>(ErrorEffect<TError> eff) => new Effect<TSuccess, TError>(false, default!, eff.Value);
+    public static implicit operator Effect<TSuccess, TError>(SuccessEffect<TSuccess> eff) =>
+        new(true, eff.Value, default!);
+
+    public static implicit operator Effect<TSuccess, TError>(ErrorEffect<TError> eff) =>
+        new(false, default!, eff.Value);
 
     bool Equals(Effect<TSuccess, TError> other) =>
-        isSuccess == other.isSuccess &&
-        isSuccess switch
+        isSuccess == other.isSuccess
+        && isSuccess switch
         {
             true => Equals(success, other.success),
             false => Equals(error, other.error),
@@ -54,7 +56,7 @@ public readonly struct Effect<TSuccess, TError>
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj))
+        if (obj is null)
         {
             return false;
         }
@@ -77,26 +79,26 @@ public readonly struct Effect<TSuccess, TError>
             false => HashCode.Combine(false, error),
         };
     }
-}
 
-public readonly struct SuccessEffect<TSuccess>
-{
-    public readonly TSuccess Value { get; }
-
-    public SuccessEffect(TSuccess value)
+    public static bool operator ==(Effect<TSuccess, TError> left, Effect<TSuccess, TError> right)
     {
-        Value = value;
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Effect<TSuccess, TError> left, Effect<TSuccess, TError> right)
+    {
+        return !(left == right);
     }
 }
 
-public readonly struct ErrorEffect<TError>
+public readonly struct SuccessEffect<TSuccess>(TSuccess value)
 {
-    public readonly TError Value { get; }
+    public readonly TSuccess Value { get; } = value;
+}
 
-    public ErrorEffect(TError value)
-    {
-        Value = value;
-    }
+public readonly struct ErrorEffect<TError>(TError value)
+{
+    public readonly TError Value { get; } = value;
 }
 
 public static class Effect
@@ -111,4 +113,3 @@ public static class Effect
         return new ErrorEffect<TError>(error);
     }
 }
-

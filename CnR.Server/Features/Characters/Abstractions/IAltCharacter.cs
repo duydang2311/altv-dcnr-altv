@@ -7,4 +7,5 @@ namespace CnR.Server.Players.Abstractions;
 public interface IAltCharacter : IPlayer, IAsyncConvertible<IPlayer>
 {
     new CharacterId? Id { get; set; }
+    AccountId AccountId { get; set; }
 }

@@ -4,7 +4,7 @@ namespace CnR.Shared.Effects;
 
 public readonly struct GenericError
 {
-    public readonly object value;
+    private readonly object value;
 
     private GenericError(object value)
     {
@@ -28,7 +28,7 @@ public readonly struct GenericError
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj))
+        if (obj is null)
         {
             return false;
         }
@@ -42,5 +42,14 @@ public readonly struct GenericError
     {
         return value.GetHashCode();
     }
-}
 
+    public static bool operator ==(GenericError left, GenericError right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(GenericError left, GenericError right)
+    {
+        return !(left == right);
+    }
+}

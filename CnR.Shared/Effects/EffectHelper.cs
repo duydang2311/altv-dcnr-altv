@@ -1,6 +1,6 @@
-namespace CnR.Server.Common;
+namespace CnR.Shared.Effects;
 
-public static class TaskHelper
+public static class EffectHelper
 {
     public static Func<Task<Effect<TReturn, GenericError>>> Try<TReturn>(Func<Task<TReturn>> f)
     {

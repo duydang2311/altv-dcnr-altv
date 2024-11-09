@@ -10,4 +10,5 @@ public sealed class AltCharacter(ICore core, IntPtr nativePointer, uint id)
         IAltCharacter
 {
     CharacterId? IAltCharacter.Id { get; set; }
+    public AccountId AccountId { get; set; }
 }

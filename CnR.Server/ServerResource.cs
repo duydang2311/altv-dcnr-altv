@@ -62,6 +62,7 @@ public sealed class ServerResource : AsyncResource
 
     private async Task StartAsync()
     {
+        AltExtensions.RegisterAdapters();
         await host.StartAsync().ConfigureAwait(false);
     }
 
