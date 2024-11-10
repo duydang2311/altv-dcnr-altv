@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using AltV.Community.Events;
 using AltV.Net;
 using AltV.Net.Async;
 using AltV.Net.Elements.Entities;
@@ -37,8 +38,10 @@ public sealed class ServerResource : AsyncResource
                                 "Missing configuration for \"Db\" section in appsettings"
                             )
                     )
+                    .AddSingleton<IEventInvoker, EventInvoker>()
                     .AddAccountFeatures()
-                    .AddPlayerFeatures();
+                    .AddPlayerFeatures()
+                    .AddMessagingFeatures();
             }
         );
 

@@ -2,31 +2,32 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using AltV.Net.Client;
 using CnR.Client.Common;
+using CnR.Client.Features.Messaging.Abstractions;
 using CnR.Client.Features.Uis.Abstractions;
 using CnR.Shared.Dtos;
+using CnR.Shared.Errors;
 
 namespace CnR.Client.Features.Accounts.Scripts;
 
-public sealed class SignInScript(IUi ui) : Script
+public sealed class SignInScript(IUi ui, IMessenger messenger) : Script
 {
     private const string DiscordAppId = "1303683973410455674";
     private const string DiscordApiCurrentUserEndpoint = "https://discordapp.com/api/users/@me";
-    private readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web);
+    private readonly JsonSerializerOptions serializerOptions = new(JsonSerializerDefaults.Web);
     private string? bearerToken;
 
     public override Task StartAsync(CancellationToken ct)
     {
         ui.On("sign-in.discord.request", OnUiSignInDiscordRequestAsync);
-        ui.On("sign-in.discord.confirm", OnUiSignInDiscordConfirm);
-        Alt.OnServer<string>("sign-in.discord.confirm", OnServerSignInDiscordConfirm);
+        ui.On("sign-in.discord.confirm", OnUiSignInDiscordConfirmAsync);
         Alt.OnConnectionComplete += OnConnectionComplete;
         return Task.CompletedTask;
     }
 
     private void OnConnectionComplete()
     {
-        ui.Emit("router.mount", "sign_in");
-        ui.Focus();
+        ui.Publish("router.mount", ["sign_in"]);
+        ui.ToggleFocus(true);
         Alt.ShowCursor(true);
         Alt.Natives.TriggerScreenblurFadeIn(0);
         Alt.Natives.DisplayHud(false);
@@ -34,11 +35,11 @@ public sealed class SignInScript(IUi ui) : Script
         Alt.GameControlsEnabled = false;
     }
 
-    private async Task OnUiSignInDiscordRequestAsync()
+    private async Task OnUiSignInDiscordRequestAsync(IMessagingContext ctx)
     {
         try
         {
-            bearerToken = await Alt.Discord.RequestOAuth2Token(DiscordAppId);
+            bearerToken = await Alt.Discord.RequestOAuth2Token(DiscordAppId).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -53,8 +54,7 @@ public sealed class SignInScript(IUi ui) : Script
             return;
         }
 
-        ui.Emit(
-            "sign-in.discord.request",
+        ctx.Respond(
             new SignInDiscordRequestDto
             {
                 Id = user.Id,
@@ -71,9 +71,7 @@ public sealed class SignInScript(IUi ui) : Script
         using var request = new HttpRequestMessage(HttpMethod.Get, DiscordApiCurrentUserEndpoint);
         request.Headers.Add("Authorization", $"Bearer {bearerToken}");
 
-        var sendEffect = await Try(
-            () => httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
-        )()
+        var sendEffect = await Try(() => httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))()
             .ConfigureAwait(false);
         if (sendEffect.TryGetError(out var e, out var sendSuccess))
         {
@@ -86,26 +84,30 @@ public sealed class SignInScript(IUi ui) : Script
             return Effect.Fail(GenericError.From("..."));
         }
 
-        var readEffect = await Try(
-            () => response.Content.ReadFromJsonAsync<DiscordUser>(SerializerOptions)
-        )()
+        var readEffect = await Try(() => response.Content.ReadFromJsonAsync<DiscordUser>(serializerOptions))()
             .ConfigureAwait(false);
         if (readEffect.TryGetError(out e, out var user))
         {
             return Effect.Fail(GenericError.From(e));
         }
-        Console.WriteLine(user);
         return Effect.Succeed(user);
     }
 
-    private void OnUiSignInDiscordConfirm()
+    private async Task OnUiSignInDiscordConfirmAsync(IMessagingContext ctx)
     {
-        Alt.EmitServer("sign-in.discord.confirm", bearerToken);
-    }
-
-    private void OnServerSignInDiscordConfirm(string code)
-    {
-        ui.Emit("sign-in.discord.confirm", code);
+        var send = await messenger.SendAsync<string>("sign-in.discord.confirm", [bearerToken]).ConfigureAwait(false);
+        if (send.TryGetError(out var e, out var success))
+        {
+            if (e.TryCatch<OperationCanceledError>(out _))
+            {
+                ctx.Respond("operation_canceled_error");
+            }
+            else if (e.TryCatch<TypeMismatchError>(out _))
+            {
+                ctx.Respond("type_mismatch_error");
+            }
+        }
+        ctx.Respond(success);
     }
 
     private sealed record DiscordUser

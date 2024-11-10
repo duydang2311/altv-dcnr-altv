@@ -14,7 +14,7 @@ public sealed class ClientResource : AsyncResource
 
     public ClientResource()
     {
-        var serviceCollection = new ServiceCollection().AddUiFeatures().AddAccountFeatures();
+        var serviceCollection = new ServiceCollection().AddMessagingFeatures().AddUiFeatures().AddAccountFeatures();
 
         serviceProvider = serviceCollection.BuildServiceProvider();
     }
@@ -35,9 +35,15 @@ public sealed class ClientResource : AsyncResource
     {
         AltExtensions.RegisterAdapters();
         await Task.WhenAll(
-            serviceProvider
-                .GetServices<IHostedService>()
-                .Select(a => a.StartAsync(CancellationToken.None))
+            serviceProvider.GetServices<IHostedService>().Select(a => a.StartAsync(CancellationToken.None))
+        );
+
+        Alt.OnServer<string, string, string, int, int, int>(
+            "test",
+            (arg1, arg2, arg3, arg4, arg5, arg6) =>
+            {
+                Alt.EmitServer("test", $"{arg1} {arg2} {arg3} {arg4} {arg5} {arg6}");
+            }
         );
     }
 }

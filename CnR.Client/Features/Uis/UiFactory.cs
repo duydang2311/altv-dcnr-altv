@@ -4,10 +4,10 @@ using CnR.Client.Features.Uis.Abstractions;
 
 namespace CnR.Client.Features.Uis;
 
-public sealed class UiFactory : IUiFactory
+public sealed class UiFactory(IUiMessagingContextFactory uiMessagingContextFactory) : IUiFactory
 {
-    public IWebView Create(ICore core, nint entityPointer, uint id)
+    public IWebView Create(ICore core, nint baseObjectPointer, uint id)
     {
-        return new Ui(core, entityPointer, id);
+        return new Ui(core, baseObjectPointer, id, uiMessagingContextFactory);
     }
 }

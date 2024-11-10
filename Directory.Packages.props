@@ -12,6 +12,7 @@
     <PackageVersion Include="AltV.Net.Client" Version="16.4.0" />
     <PackageVersion Include="AltV.Net.Client.Async" Version="16.4.0" />
     <PackageVersion Include="AltV.Net.Shared" Version="16.4.0" />
+    <PackageVersion Include="AsyncAwaitBestPractices" Version="8.0.0" />
     <PackageVersion Include="LanguageExt.Core" Version="4.4.9" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

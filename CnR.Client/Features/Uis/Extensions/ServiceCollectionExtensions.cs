@@ -10,6 +10,7 @@ public static partial class ServiceCollectionExtensions
     {
         serviceCollection
             .AddSingleton<IUiFactory, UiFactory>()
+            .AddSingleton<IUiMessagingContextFactory, UiMessagingContextFactory>()
             .AddSingleton(provider => (IUi)Alt.CreateWebView("http://localhost:5173"));
         return serviceCollection;
     }

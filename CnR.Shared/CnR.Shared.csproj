@@ -11,6 +11,7 @@
     <PackageReference Include="AltV.Community.Events" />
     <PackageReference Include="AltV.Community.MValueAdapters.Generators" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="AltV.Net.Shared" />
+    <PackageReference Include="AsyncAwaitBestPractices" />
     <PackageReference Include="OneOf" />
   </ItemGroup>
 

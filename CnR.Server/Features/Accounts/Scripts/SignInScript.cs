@@ -1,11 +1,10 @@
 using System.Net.Http.Json;
 using System.Text.Json;
-using AltV.Net.Async;
-using AltV.Net.Elements.Entities;
 using CnR.Server.Common;
 using CnR.Server.Domain.Models;
 using CnR.Server.Features.Accounts.Abstractions;
 using CnR.Server.Features.Characters.Abstractions;
+using CnR.Server.Features.Messaging.Abstractions;
 using CnR.Server.Infrastructure.Persistence.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,27 +13,25 @@ namespace CnR.Server.Features.Accounts.Scripts;
 public sealed class SignInScript(
     IHttpClientFactory httpClientFactory,
     IDbFactory dbFactory,
-    IAccountLoggedInEvent accountLoggedInEvent
+    IAccountLoggedInEvent accountLoggedInEvent,
+    IMessenger messenger
 ) : Script
 {
     private const string DiscordApiCurrentUserEndpoint = "https://discordapp.com/api/users/@me";
-    private readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web);
+    private readonly JsonSerializerOptions serializerOptions = new(JsonSerializerDefaults.Web);
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        AltAsync.OnClient<IAltCharacter, string, Task>(
-            "sign-in.discord.confirm",
-            OnSignInDiscordConfirmAsync
-        );
+        messenger.On<IAltCharacter, string>("sign-in.discord.confirm", OnSignInDiscordConfirmAsync);
         return Task.CompletedTask;
     }
 
-    private async Task OnSignInDiscordConfirmAsync(IAltCharacter character, string bearerToken)
+    private async Task OnSignInDiscordConfirmAsync(IMessagingContext<IAltCharacter> ctx, string bearerToken)
     {
         var getDiscordUser = await GetDiscordUserAsync(bearerToken).ConfigureAwait(false);
         if (getDiscordUser.TryGetError(out var e, out var user))
         {
-            character.Emit("sign-in.discord.confirm", "oauth_failed");
+            ctx.Respond("oauth_failed");
             return;
         }
 
@@ -47,8 +44,8 @@ public sealed class SignInScript(
 
         if (acc is not null)
         {
-            character.AccountId = acc.AccountId;
-            character.Emit("sign-in.discord.confirm", "success");
+            ctx.Player.AccountId = acc.AccountId;
+            ctx.Respond("success");
             return;
         }
 
@@ -66,13 +63,13 @@ public sealed class SignInScript(
         var saveEffect = await Try(() => db.SaveChangesAsync())().ConfigureAwait(false);
         if (saveEffect.TryGetError(out e, out var count) || count == 0)
         {
-            character.Emit("sign-in.discord.confirm", "register_failed");
+            ctx.Respond("register_failed");
             return;
         }
 
-        character.AccountId = account.Id;
-        character.Emit("sign-in.discord.confirm", "success");
-        accountLoggedInEvent.Invoke(character);
+        ctx.Player.AccountId = account.Id;
+        accountLoggedInEvent.Invoke(ctx.Player);
+        ctx.Respond("success");
     }
 
     private async Task<Effect<DiscordUser, GenericError>> GetDiscordUserAsync(string bearerToken)
@@ -81,9 +78,7 @@ public sealed class SignInScript(
         using var request = new HttpRequestMessage(HttpMethod.Get, DiscordApiCurrentUserEndpoint);
         request.Headers.Add("Authorization", $"Bearer {bearerToken}");
 
-        var send = await Try(
-            () => httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
-        )()
+        var send = await Try(() => httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))()
             .ConfigureAwait(false);
         if (send.TryGetError(out var e, out var sendSuccess))
         {
@@ -96,9 +91,7 @@ public sealed class SignInScript(
             return Effect.Fail(GenericError.From("..."));
         }
 
-        var read = await Try(
-            () => response.Content.ReadFromJsonAsync<DiscordUser>(SerializerOptions)
-        )()
+        var read = await Try(() => response.Content.ReadFromJsonAsync<DiscordUser>(serializerOptions))()
             .ConfigureAwait(false);
         if (read.TryGetError(out e, out var user))
         {
