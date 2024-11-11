@@ -60,7 +60,7 @@ public sealed class ServerResource : AsyncResource
 
     public override IEntityFactory<IPlayer> GetPlayerFactory()
     {
-        return host.Services.GetRequiredService<IAltCharacterFactory>();
+        return host.Services.GetRequiredService<ICharacterFactory>();
     }
 
     private async Task StartAsync()

@@ -4,6 +4,4 @@ using CnR.Server.Features.Characters.Abstractions;
 
 namespace CnR.Server.Features.Accounts.Events;
 
-public sealed class AccountLoggedInEvent(IEventInvoker invoker)
-    : Event<IAltCharacter>(invoker),
-        IAccountLoggedInEvent { }
+public sealed class AccountLoggedInEvent(IEventInvoker invoker) : Event<ICharacter>(invoker), IAccountLoggedInEvent { }

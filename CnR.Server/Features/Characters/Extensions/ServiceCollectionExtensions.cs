@@ -7,7 +7,7 @@ public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPlayerFeatures(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<IAltCharacterFactory, AltCharacterFactory>();
+        serviceCollection.AddSingleton<ICharacterFactory, CharacterFactory>();
         return serviceCollection;
     }
 }

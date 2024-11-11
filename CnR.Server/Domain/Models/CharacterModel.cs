@@ -1,8 +1,8 @@
 namespace CnR.Server.Domain.Models;
 
-public sealed record Character
+public sealed record CharacterModel
 {
     public AccountId AccountId { get; init; }
-    public Account Account { get; init; } = null!;
+    public AccountModel Account { get; init; } = null!;
     public CharacterId Id { get; init; }
 }

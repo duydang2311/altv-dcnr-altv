@@ -5,14 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CnR.Server.Infrastructure.Persistence.Configurations;
 
-public sealed class AccountConfiguration : IEntityTypeConfiguration<Account>
+public sealed class AccountConfiguration : IEntityTypeConfiguration<AccountModel>
 {
-    public void Configure(EntityTypeBuilder<Account> builder)
+    public void Configure(EntityTypeBuilder<AccountModel> builder)
     {
-        builder
-            .Property(a => a.Id)
-            .HasConversion<EntityGuidConverter<AccountId>>()
-            .ValueGeneratedOnAdd();
+        builder.Property(a => a.Id).HasConversion<EntityGuidConverter<AccountId>>().ValueGeneratedOnAdd();
         builder.HasKey(a => a.Id);
     }
 }

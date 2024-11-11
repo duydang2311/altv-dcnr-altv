@@ -5,9 +5,9 @@ namespace CnR.Server.Infrastructure.Persistence;
 
 public sealed class Db(DbContextOptions options) : DbContext(options)
 {
-    public DbSet<Account> Accounts => Set<Account>();
-    public DbSet<DiscordAccount> DiscordAccounts => Set<DiscordAccount>();
-    public DbSet<Character> Characters => Set<Character>();
+    public DbSet<AccountModel> Accounts => Set<AccountModel>();
+    public DbSet<DiscordAccountModel> DiscordAccounts => Set<DiscordAccountModel>();
+    public DbSet<CharacterModel> Characters => Set<CharacterModel>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -30,7 +30,7 @@ namespace CnR.Server.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("CnR.Server.Domain.Models.Character", b =>
@@ -46,7 +46,7 @@ namespace CnR.Server.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Characters");
+                    b.ToTable("Characters", (string)null);
                 });
 
             modelBuilder.Entity("CnR.Server.Domain.Models.DiscordAccount", b =>
@@ -69,7 +69,7 @@ namespace CnR.Server.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DiscordId");
 
-                    b.ToTable("DiscordAccounts");
+                    b.ToTable("DiscordAccounts", (string)null);
                 });
 
             modelBuilder.Entity("CnR.Server.Domain.Models.Character", b =>

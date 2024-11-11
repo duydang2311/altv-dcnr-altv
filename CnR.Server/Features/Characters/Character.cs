@@ -5,10 +5,10 @@ using CnR.Server.Features.Characters.Abstractions;
 
 namespace CnR.Server.Features.Characters;
 
-public sealed class AltCharacter(ICore core, IntPtr nativePointer, uint id)
+public sealed class Character(ICore core, IntPtr nativePointer, uint id)
     : AsyncPlayer(core, nativePointer, id),
-        IAltCharacter
+        ICharacter
 {
-    CharacterId? IAltCharacter.Id { get; set; }
+    CharacterId? ICharacter.Id { get; set; }
     public AccountId AccountId { get; set; }
 }

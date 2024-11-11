@@ -23,11 +23,11 @@ public sealed class SignInScript(
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        messenger.On<IAltCharacter, string>("sign-in.discord.confirm", OnSignInDiscordConfirmAsync);
+        messenger.On<ICharacter, string>("sign-in.discord.confirm", OnSignInDiscordConfirmAsync);
         return Task.CompletedTask;
     }
 
-    private async Task OnSignInDiscordConfirmAsync(IMessagingContext<IAltCharacter> ctx, string bearerToken)
+    private async Task OnSignInDiscordConfirmAsync(IMessagingContext<ICharacter> ctx, string bearerToken)
     {
         var getDiscordUser = await GetDiscordUserAsync(bearerToken).ConfigureAwait(false);
         if (getDiscordUser.TryGetError(out var e, out var user))
@@ -50,9 +50,9 @@ public sealed class SignInScript(
             return;
         }
 
-        var account = new Account
+        var account = new AccountModel
         {
-            Discord = new DiscordAccount
+            Discord = new DiscordAccountModel
             {
                 DiscordId = user.Id,
                 DiscordUsername = user.Username,
