@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using AltV.Community.Messaging.Server.Abstractions;
 using CnR.Server.Common;
 using CnR.Server.Domain.Models;
 using CnR.Server.Features.Accounts.Abstractions;
@@ -14,7 +15,7 @@ public sealed class SignInScript(
     IHttpClientFactory httpClientFactory,
     IDbFactory dbFactory,
     IAccountLoggedInEvent accountLoggedInEvent,
-    IMessenger messenger
+    IEffectfulMessenger messenger
 ) : Script
 {
     private const string DiscordApiCurrentUserEndpoint = "https://discordapp.com/api/users/@me";

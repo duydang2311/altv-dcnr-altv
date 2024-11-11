@@ -1,6 +1,6 @@
 using System.Numerics;
+using AltV.Community.Messaging.Client.Abstractions;
 using AltV.Net.Client.Elements.Interfaces;
-using CnR.Client.Features.Messaging.Abstractions;
 
 namespace CnR.Client.Features.Uis.Abstractions;
 

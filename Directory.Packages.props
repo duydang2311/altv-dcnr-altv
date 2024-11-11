@@ -6,6 +6,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="AltV.Community.Events" Version="0.0.1" />
+    <PackageVersion Include="AltV.Community.Messaging.Client" Version="0.0.2" />
+    <PackageVersion Include="AltV.Community.Messaging.Server" Version="0.0.2" />
     <PackageVersion Include="AltV.Community.MValueAdapters.Generators" Version="0.2.2" />
     <PackageVersion Include="AltV.Net" Version="16.4.0" />
     <PackageVersion Include="AltV.Net.Async" Version="16.4.0" />

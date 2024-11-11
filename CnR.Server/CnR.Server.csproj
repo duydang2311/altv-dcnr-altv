@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AltV.Community.Messaging.Server" />
     <PackageReference Include="AltV.Net" />
     <PackageReference Include="AltV.Net.Async" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">

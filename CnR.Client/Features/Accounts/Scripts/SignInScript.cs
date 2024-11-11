@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using AltV.Community.Messaging.Client.Abstractions;
 using AltV.Net.Client;
 using CnR.Client.Common;
 using CnR.Client.Features.Messaging.Abstractions;
@@ -9,7 +10,7 @@ using CnR.Shared.Errors;
 
 namespace CnR.Client.Features.Accounts.Scripts;
 
-public sealed class SignInScript(IUi ui, IMessenger messenger) : Script
+public sealed class SignInScript(IUi ui, IEffectfulMessenger messenger) : Script
 {
     private const string DiscordAppId = "1303683973410455674";
     private const string DiscordApiCurrentUserEndpoint = "https://discordapp.com/api/users/@me";

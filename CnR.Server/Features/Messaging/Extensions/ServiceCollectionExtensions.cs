@@ -1,3 +1,5 @@
+using AltV.Community.Messaging.Server;
+using AltV.Community.Messaging.Server.Abstractions;
 using CnR.Server.Features.Messaging;
 using CnR.Server.Features.Messaging.Abstractions;
 
@@ -9,7 +11,8 @@ public static partial class ServiceCollectionExtensions
     {
         serviceCollection
             .AddSingleton<IMessagingContextFactory, MessagingContextFactory>()
-            .AddSingleton<IMessenger, Messenger>();
+            .AddSingleton<IMessenger>(provider => provider.GetRequiredService<IEffectfulMessenger>())
+            .AddSingleton<IEffectfulMessenger, EffectfulMessenger>();
         return serviceCollection;
     }
 }

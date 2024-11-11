@@ -1,9 +1,9 @@
+using AltV.Community.Messaging.Client.Abstractions;
 using AltV.Net;
 using AltV.Net.Client;
 using AltV.Net.Client.Elements.Entities;
 using AltV.Net.Client.Elements.Interfaces;
 using AsyncAwaitBestPractices;
-using CnR.Client.Features.Messaging.Abstractions;
 using CnR.Client.Features.Uis.Abstractions;
 
 namespace CnR.Client.Features.Uis;

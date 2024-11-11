@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AltV.Community.Messaging.Client" />
     <PackageReference Include="AltV.Net.Client" />
     <PackageReference Include="AltV.Net.Client.Async" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />

@@ -75,7 +75,7 @@ public sealed class ServerResource : AsyncResource
         host.Dispose();
     }
 
-    private class ServerResourceLifetime : IHostLifetime
+    private sealed class ServerResourceLifetime : IHostLifetime
     {
         public Task StopAsync(CancellationToken cancellationToken)
         {

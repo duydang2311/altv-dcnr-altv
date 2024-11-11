@@ -1,4 +1,4 @@
-using CnR.Client.Features.Messaging.Abstractions;
+using AltV.Community.Messaging.Client.Abstractions;
 using CnR.Client.Features.Uis.Abstractions;
 
 namespace CnR.Client.Features.Uis;
