@@ -29,12 +29,12 @@ public sealed class Game : IGame
         {
             if (Interlocked.Increment(ref showCursorCounter) > 0)
             {
-                Alt.GameControlsEnabled = false;
+                Alt.ShowCursor(true);
             }
         }
         else if (Interlocked.Decrement(ref showCursorCounter) <= 0)
         {
-            Alt.GameControlsEnabled = true;
+            Alt.ShowCursor(false);
         }
     }
 }
