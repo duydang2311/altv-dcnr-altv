@@ -3,16 +3,16 @@ using CnR.Client.Features.Uis.Abstractions;
 
 namespace CnR.Client.Features.Uis;
 
-public sealed class UiMessagingContext(IUi ui, string eventName) : IMessagingContext
+public sealed class UiMessagingContext(IUi ui, long messageId, string eventName) : IMessagingContext
 {
-    private int responseStarted;
+    private int responded;
 
     public void Respond(object? value = null)
     {
-        if (Interlocked.CompareExchange(ref responseStarted, 1, 0) == 1)
+        if (Interlocked.CompareExchange(ref responded, 1, 0) == 1)
         {
             return;
         }
-        ui.Publish(eventName, value is null ? [] : [value]);
+        ui.Publish(eventName, messageId, value is null ? [] : [value]);
     }
 }

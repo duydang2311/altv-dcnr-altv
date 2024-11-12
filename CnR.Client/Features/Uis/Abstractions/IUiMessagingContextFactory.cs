@@ -4,5 +4,5 @@ namespace CnR.Client.Features.Uis.Abstractions;
 
 public interface IUiMessagingContextFactory
 {
-    IMessagingContext CreateMessagingContext(IUi ui, string eventName);
+    IMessagingContext CreateMessagingContext(IUi ui, long messageId, string eventName);
 }

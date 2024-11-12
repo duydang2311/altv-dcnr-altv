@@ -1,12 +1,16 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using AltV.Community.Messaging.Server.Abstractions;
+using AltV.Net.Async;
+using AltV.Net.Elements.Entities;
 using CnR.Server.Common;
 using CnR.Server.Domain.Models;
 using CnR.Server.Features.Accounts.Abstractions;
 using CnR.Server.Features.Characters.Abstractions;
 using CnR.Server.Features.Messaging.Abstractions;
+using CnR.Server.Features.Uis.Abstractions;
 using CnR.Server.Infrastructure.Persistence.Abstractions;
+using CnR.Shared.Uis;
 using Microsoft.EntityFrameworkCore;
 
 namespace CnR.Server.Features.Accounts.Scripts;
@@ -15,7 +19,8 @@ public sealed class SignInScript(
     IHttpClientFactory httpClientFactory,
     IDbFactory dbFactory,
     IAccountLoggedInEvent accountLoggedInEvent,
-    IEffectfulMessenger messenger
+    IEffectfulMessenger messenger,
+    IUi ui
 ) : Script
 {
     private const string DiscordApiCurrentUserEndpoint = "https://discordapp.com/api/users/@me";
@@ -24,7 +29,13 @@ public sealed class SignInScript(
     public override Task StartAsync(CancellationToken cancellationToken)
     {
         messenger.On<ICharacter, string>("sign-in.discord.confirm", OnSignInDiscordConfirmAsync);
+        AltAsync.OnPlayerConnect += OnPlayerConnectAsync;
         return Task.CompletedTask;
+    }
+
+    private async Task OnPlayerConnectAsync(IPlayer player, string reason)
+    {
+        var mounted = await ui.MountAsync(player, Route.SignIn).ConfigureAwait(false);
     }
 
     private async Task OnSignInDiscordConfirmAsync(IMessagingContext<ICharacter> ctx, string bearerToken)
@@ -46,6 +57,8 @@ public sealed class SignInScript(
         if (acc is not null)
         {
             ctx.Player.AccountId = acc.AccountId;
+            ui.Unmount(ctx.Player, Route.SignIn);
+            accountLoggedInEvent.Invoke(ctx.Player);
             ctx.Respond("success");
             return;
         }
@@ -69,6 +82,7 @@ public sealed class SignInScript(
         }
 
         ctx.Player.AccountId = account.Id;
+        ui.Unmount(ctx.Player, Route.SignIn);
         accountLoggedInEvent.Invoke(ctx.Player);
         ctx.Respond("success");
     }

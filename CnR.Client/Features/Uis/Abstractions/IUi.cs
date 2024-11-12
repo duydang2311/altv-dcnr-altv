@@ -1,6 +1,8 @@
 using System.Numerics;
 using AltV.Community.Messaging.Client.Abstractions;
 using AltV.Net.Client.Elements.Interfaces;
+using CnR.Shared.Uis;
+using OneOf.Types;
 
 namespace CnR.Client.Features.Uis.Abstractions;
 
@@ -14,8 +16,19 @@ public interface IUi : IBaseObject
     Vector2 Size { get; set; }
     string Url { get; set; }
 
+    void Initialize();
     void ToggleFocus(bool toggle);
     void Publish(string eventName, object?[]? args = null);
+    void Publish(string eventName, long messageId, object?[]? args = null);
+    Task<Effect<T, GenericError>> SendAsync<T>(string eventName, object?[]? args = null);
+    Task<Effect<None, GenericError>> MountAsync(Route route, object? props = null);
+    Task<Effect<None, GenericError>> UnmountAsync(Route route, object? props = null);
+    Task<Effect<None, GenericError>> MountAsync(string route, object? props = null);
+    Task<Effect<None, GenericError>> UnmountAsync(string route, object? props = null);
+    Action OnMount(Route route, Action handler);
+    Action OnMount(Route route, Func<Task> handler);
+    Action OnUnmount(Route route, Action handler);
+    Action OnUnmount(Route route, Func<Task> handler);
 
     Action On(string eventName, Action handler);
     Action On(string eventName, Action<IMessagingContext> handler);

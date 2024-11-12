@@ -40,8 +40,9 @@ public sealed class ServerResource : AsyncResource
                     )
                     .AddSingleton<IEventInvoker, EventInvoker>()
                     .AddAccountFeatures()
-                    .AddPlayerFeatures()
-                    .AddMessagingFeatures();
+                    .AddCharacterFeatures()
+                    .AddMessagingFeatures()
+                    .AddUiFeatures();
             }
         );
 

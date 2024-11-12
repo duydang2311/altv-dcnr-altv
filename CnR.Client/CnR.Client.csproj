@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CnR.Shared\CnR.Shared.csproj" />
+    <!-- <ProjectReference Include="..\..\..\..\altv-community\packages\AltV.Community.Messaging.Client\AltV.Community.Messaging.Client.csproj" /> -->
   </ItemGroup>
 
   <Target Name="CopyFiles" AfterTargets="publish">

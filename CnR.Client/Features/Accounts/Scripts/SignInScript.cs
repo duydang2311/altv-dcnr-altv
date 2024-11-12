@@ -3,14 +3,16 @@ using System.Text.Json;
 using AltV.Community.Messaging.Client.Abstractions;
 using AltV.Net.Client;
 using CnR.Client.Common;
+using CnR.Client.Features.Games.Abstractions;
 using CnR.Client.Features.Messaging.Abstractions;
 using CnR.Client.Features.Uis.Abstractions;
 using CnR.Shared.Dtos;
 using CnR.Shared.Errors;
+using CnR.Shared.Uis;
 
 namespace CnR.Client.Features.Accounts.Scripts;
 
-public sealed class SignInScript(IUi ui, IEffectfulMessenger messenger) : Script
+public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messenger) : Script
 {
     private const string DiscordAppId = "1303683973410455674";
     private const string DiscordApiCurrentUserEndpoint = "https://discordapp.com/api/users/@me";
@@ -21,19 +23,29 @@ public sealed class SignInScript(IUi ui, IEffectfulMessenger messenger) : Script
     {
         ui.On("sign-in.discord.request", OnUiSignInDiscordRequestAsync);
         ui.On("sign-in.discord.confirm", OnUiSignInDiscordConfirmAsync);
-        Alt.OnConnectionComplete += OnConnectionComplete;
+        ui.OnMount(Route.SignIn, OnUiMount);
+        ui.OnUnmount(Route.SignIn, OnUiUnmount);
         return Task.CompletedTask;
     }
 
-    private void OnConnectionComplete()
+    private void OnUiMount()
     {
-        ui.Publish("router.mount", ["sign_in"]);
         ui.ToggleFocus(true);
-        Alt.ShowCursor(true);
+        game.ToggleCursor(true);
+        game.ToggleControls(false);
         Alt.Natives.TriggerScreenblurFadeIn(0);
         Alt.Natives.DisplayHud(false);
         Alt.Natives.DisplayRadar(false);
-        Alt.GameControlsEnabled = false;
+    }
+
+    private void OnUiUnmount()
+    {
+        ui.ToggleFocus(false);
+        game.ToggleCursor(false);
+        game.ToggleControls(true);
+        Alt.Natives.TriggerScreenblurFadeOut(2000);
+        Alt.Natives.DisplayHud(true);
+        Alt.Natives.DisplayRadar(true);
     }
 
     private async Task OnUiSignInDiscordRequestAsync(IMessagingContext ctx)

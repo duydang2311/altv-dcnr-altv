@@ -6,9 +6,10 @@ using CnR.Shared.Errors;
 
 namespace CnR.Client.Features.Messaging;
 
-public sealed class EffectfulMessenger(IMessagingContextFactory messagingContextFactory)
-    : Messenger(messagingContextFactory),
-        IEffectfulMessenger
+public sealed class EffectfulMessenger(
+    IMessagingContextFactory messagingContextFactory,
+    IMessageIdProvider messageIdProvider
+) : Messenger(messagingContextFactory, messageIdProvider), IEffectfulMessenger
 {
     public new Task<Effect<object?, GenericError>> SendAsync(string eventName, object?[]? args = null)
     {

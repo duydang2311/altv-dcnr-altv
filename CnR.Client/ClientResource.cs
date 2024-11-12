@@ -14,7 +14,11 @@ public sealed class ClientResource : AsyncResource
 
     public ClientResource()
     {
-        var serviceCollection = new ServiceCollection().AddMessagingFeatures().AddUiFeatures().AddAccountFeatures();
+        var serviceCollection = new ServiceCollection()
+            .AddGameFeatures()
+            .AddMessagingFeatures()
+            .AddUiFeatures()
+            .AddAccountFeatures();
 
         serviceProvider = serviceCollection.BuildServiceProvider();
     }
