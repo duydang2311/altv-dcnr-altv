@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using AltV.Community.Events;
 using AltV.Net;
 using AltV.Net.Async;
@@ -42,7 +42,9 @@ public sealed class ServerResource : AsyncResource
                     .AddAccountFeatures()
                     .AddCharacterFeatures()
                     .AddMessagingFeatures()
-                    .AddUiFeatures();
+                    .AddUiFeatures()
+                    .AddLobbyFeatures()
+                    .AddPursuitLobbyFeatures();
             }
         );
 
@@ -66,7 +68,7 @@ public sealed class ServerResource : AsyncResource
 
     private async Task StartAsync()
     {
-        AltExtensions.RegisterAdapters();
+        AltExtensions.RegisterAdapters(registerListAdapters: true);
         await host.StartAsync().ConfigureAwait(false);
     }
 

@@ -7,12 +7,13 @@ public sealed class UiMessagingContext(IUi ui, long messageId, string eventName)
 {
     private int responded;
 
-    public void Respond(object? value = null)
+    public void Respond(object?[]? args = null)
     {
         if (Interlocked.CompareExchange(ref responded, 1, 0) == 1)
         {
             return;
         }
-        ui.Publish(eventName, messageId, value is null ? [] : [value]);
+
+        ui.Publish(eventName, messageId, args);
     }
 }

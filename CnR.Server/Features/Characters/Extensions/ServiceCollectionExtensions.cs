@@ -8,7 +8,10 @@ public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCharacterFeatures(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<ICharacterFactory, CharacterFactory>().AddScript<SpawnCharacterScript>();
+        serviceCollection
+            .AddSingleton<ICharacterFactory, CharacterFactory>()
+            .AddScript<SpawnCharacterScript>()
+            .AddScript<SelectGamemodeScript>();
         return serviceCollection;
     }
 }

@@ -214,14 +214,14 @@ public sealed class Ui(
     {
         if (toggle)
         {
-            if (Interlocked.Increment(ref focusCounter) > 0)
+            if (Interlocked.Increment(ref focusCounter) > 0 && !Focused)
             {
                 Focus();
             }
         }
         else
         {
-            if (Interlocked.Decrement(ref focusCounter) <= 0)
+            if (Interlocked.Decrement(ref focusCounter) <= 0 && Focused)
             {
                 Unfocus();
             }

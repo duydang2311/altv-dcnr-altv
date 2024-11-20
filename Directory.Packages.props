@@ -6,14 +6,14 @@
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="AltV.Community.Events" Version="0.0.2" />
-    <PackageVersion Include="AltV.Community.Messaging.Client" Version="0.0.4" />
-    <PackageVersion Include="AltV.Community.Messaging.Server" Version="0.0.5" />
+    <PackageVersion Include="AltV.Community.Messaging.Client" Version="0.0.6" />
+    <PackageVersion Include="AltV.Community.Messaging.Server" Version="0.0.7" />
     <PackageVersion Include="AltV.Community.MValueAdapters.Generators" Version="0.2.2" />
-    <PackageVersion Include="AltV.Net" Version="16.4.0" />
-    <PackageVersion Include="AltV.Net.Async" Version="16.4.0" />
-    <PackageVersion Include="AltV.Net.Client" Version="16.4.0" />
-    <PackageVersion Include="AltV.Net.Client.Async" Version="16.4.0" />
-    <PackageVersion Include="AltV.Net.Shared" Version="16.4.0" />
+    <PackageVersion Include="AltV.Net" Version="16.4.1" />
+    <PackageVersion Include="AltV.Net.Async" Version="16.4.1" />
+    <PackageVersion Include="AltV.Net.Client" Version="16.4.1" />
+    <PackageVersion Include="AltV.Net.Client.Async" Version="16.4.1" />
+    <PackageVersion Include="AltV.Net.Shared" Version="16.4.1" />
     <PackageVersion Include="AsyncAwaitBestPractices" Version="8.0.0" />
     <PackageVersion Include="LanguageExt.Core" Version="4.4.9" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">

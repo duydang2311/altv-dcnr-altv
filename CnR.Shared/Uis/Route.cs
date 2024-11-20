@@ -10,5 +10,5 @@ public sealed class Route
     }
 
     public static readonly Route SignIn = new("sign_in");
-    public static readonly Route[] All = [SignIn];
+    public static readonly Route GamemodeSelection = new("gamemode_selection");
 }

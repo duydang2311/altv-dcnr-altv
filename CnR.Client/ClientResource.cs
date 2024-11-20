@@ -18,7 +18,8 @@ public sealed class ClientResource : AsyncResource
             .AddGameFeatures()
             .AddMessagingFeatures()
             .AddUiFeatures()
-            .AddAccountFeatures();
+            .AddAccountFeatures()
+            .AddCharacterFeatures();
 
         serviceProvider = serviceCollection.BuildServiceProvider();
     }
@@ -37,10 +38,8 @@ public sealed class ClientResource : AsyncResource
 
     private async Task StartAsync()
     {
-        AltExtensions.RegisterAdapters();
-        await Task.WhenAll(
-                serviceProvider.GetServices<IHostedService>().Select(a => a.StartAsync(CancellationToken.None))
-            )
+        AltExtensions.RegisterAdapters(registerListAdapters: true);
+        await Task.WhenAll(serviceProvider.GetServices<IHostedService>().Select(a => a.StartAsync(CancellationToken.None)))
             .ConfigureAwait(false);
     }
 }

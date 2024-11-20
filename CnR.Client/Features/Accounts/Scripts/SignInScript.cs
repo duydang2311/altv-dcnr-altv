@@ -34,25 +34,20 @@ public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messeng
         Alt.Natives.TriggerScreenblurFadeIn(0);
         Alt.Natives.DisplayHud(false);
         Alt.Natives.DisplayRadar(false);
-        var cleanups = new Action[]
-        {
-            ui.On("sign-in.discord.request", OnUiSignInDiscordRequestAsync),
-            ui.On("sign-in.discord.confirm", OnUiSignInDiscordConfirmAsync)
-        };
 
-        return () =>
-        {
-            ui.ToggleFocus(false);
-            game.ToggleCursor(false);
-            game.ToggleControls(true);
-            Alt.Natives.TriggerScreenblurFadeOut(2000);
-            Alt.Natives.DisplayHud(true);
-            Alt.Natives.DisplayRadar(true);
-            foreach (var cleanup in cleanups)
+        return Merge(
+            ui.On("sign-in.discord.request", OnUiSignInDiscordRequestAsync),
+            ui.On("sign-in.discord.confirm", OnUiSignInDiscordConfirmAsync),
+            () =>
             {
-                cleanup();
+                ui.ToggleFocus(false);
+                game.ToggleCursor(false);
+                game.ToggleControls(true);
+                Alt.Natives.TriggerScreenblurFadeOut(2000);
+                Alt.Natives.DisplayHud(true);
+                Alt.Natives.DisplayRadar(true);
             }
-        };
+        );
     }
 
     private async Task OnUiSignInDiscordRequestAsync(IMessagingContext ctx)
@@ -74,7 +69,7 @@ public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messeng
             return;
         }
 
-        ctx.Respond(
+        ctx.Respond([
             new SignInDiscordRequestDto
             {
                 Id = user.Id,
@@ -82,7 +77,7 @@ public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messeng
                 Avatar = user.Avatar,
                 Banner = user.Banner
             }
-        );
+        ]);
     }
 
     private async Task<Effect<DiscordUser, GenericError>> GetDiscordUserAsync(string bearerToken)
@@ -120,14 +115,14 @@ public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messeng
         {
             if (e.TryCatch<OperationCanceledError>(out _))
             {
-                ctx.Respond("operation_canceled_error");
+                ctx.Respond(["operation_canceled_error"]);
             }
             else if (e.TryCatch<TypeMismatchError>(out _))
             {
-                ctx.Respond("type_mismatch_error");
+                ctx.Respond(["type_mismatch_error"]);
             }
         }
-        ctx.Respond(success);
+        ctx.Respond([success]);
     }
 
     private sealed record DiscordUser

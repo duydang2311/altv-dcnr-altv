@@ -12,12 +12,12 @@ public sealed class Game : IGame
     {
         if (!toggle)
         {
-            if (Interlocked.Increment(ref disabledControlsCounter) > 0)
+            if (Interlocked.Increment(ref disabledControlsCounter) > 0 && Alt.GameControlsEnabled)
             {
                 Alt.GameControlsEnabled = false;
             }
         }
-        else if (Interlocked.Decrement(ref disabledControlsCounter) <= 0)
+        else if (Interlocked.Decrement(ref disabledControlsCounter) <= 0 && !Alt.GameControlsEnabled)
         {
             Alt.GameControlsEnabled = true;
         }
@@ -27,12 +27,12 @@ public sealed class Game : IGame
     {
         if (toggle)
         {
-            if (Interlocked.Increment(ref showCursorCounter) > 0)
+            if (Interlocked.Increment(ref showCursorCounter) > 0 && !Alt.IsCursorVisible)
             {
                 Alt.ShowCursor(true);
             }
         }
-        else if (Interlocked.Decrement(ref showCursorCounter) <= 0)
+        else if (Interlocked.Decrement(ref showCursorCounter) <= 0 && Alt.IsCursorVisible)
         {
             Alt.ShowCursor(false);
         }

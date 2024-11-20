@@ -43,7 +43,7 @@ public sealed class SignInScript(
         var getDiscordUser = await GetDiscordUserAsync(bearerToken).ConfigureAwait(false);
         if (getDiscordUser.TryGetError(out var e, out var user))
         {
-            ctx.Respond("oauth_failed");
+            ctx.Respond(["oauth_failed"]);
             return;
         }
 
@@ -59,7 +59,7 @@ public sealed class SignInScript(
             ctx.Player.AccountId = acc.AccountId;
             ui.Unmount(ctx.Player, Route.SignIn);
             accountLoggedInEvent.Invoke(ctx.Player);
-            ctx.Respond("success");
+            ctx.Respond(["success"]);
             return;
         }
 
@@ -77,14 +77,14 @@ public sealed class SignInScript(
         var saveEffect = await Try(() => db.SaveChangesAsync())().ConfigureAwait(false);
         if (saveEffect.TryGetError(out e, out var count) || count == 0)
         {
-            ctx.Respond("register_failed");
+            ctx.Respond(["register_failed"]);
             return;
         }
 
         ctx.Player.AccountId = account.Id;
         ui.Unmount(ctx.Player, Route.SignIn);
         accountLoggedInEvent.Invoke(ctx.Player);
-        ctx.Respond("success");
+        ctx.Respond(["success"]);
     }
 
     private async Task<Effect<DiscordUser, GenericError>> GetDiscordUserAsync(string bearerToken)
