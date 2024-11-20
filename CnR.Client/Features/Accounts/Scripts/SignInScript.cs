@@ -18,17 +18,15 @@ public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messeng
     private const string DiscordApiCurrentUserEndpoint = "https://discordapp.com/api/users/@me";
     private readonly JsonSerializerOptions serializerOptions = new(JsonSerializerDefaults.Web);
     private string? bearerToken;
+    private Action[]? Cleanups;
 
     public override Task StartAsync(CancellationToken ct)
     {
-        ui.On("sign-in.discord.request", OnUiSignInDiscordRequestAsync);
-        ui.On("sign-in.discord.confirm", OnUiSignInDiscordConfirmAsync);
         ui.OnMount(Route.SignIn, OnUiMount);
-        ui.OnUnmount(Route.SignIn, OnUiUnmount);
         return Task.CompletedTask;
     }
 
-    private void OnUiMount()
+    private Action OnUiMount()
     {
         ui.ToggleFocus(true);
         game.ToggleCursor(true);
@@ -36,16 +34,25 @@ public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messeng
         Alt.Natives.TriggerScreenblurFadeIn(0);
         Alt.Natives.DisplayHud(false);
         Alt.Natives.DisplayRadar(false);
-    }
+        var cleanups = new Action[]
+        {
+            ui.On("sign-in.discord.request", OnUiSignInDiscordRequestAsync),
+            ui.On("sign-in.discord.confirm", OnUiSignInDiscordConfirmAsync)
+        };
 
-    private void OnUiUnmount()
-    {
-        ui.ToggleFocus(false);
-        game.ToggleCursor(false);
-        game.ToggleControls(true);
-        Alt.Natives.TriggerScreenblurFadeOut(2000);
-        Alt.Natives.DisplayHud(true);
-        Alt.Natives.DisplayRadar(true);
+        return () =>
+        {
+            ui.ToggleFocus(false);
+            game.ToggleCursor(false);
+            game.ToggleControls(true);
+            Alt.Natives.TriggerScreenblurFadeOut(2000);
+            Alt.Natives.DisplayHud(true);
+            Alt.Natives.DisplayRadar(true);
+            foreach (var cleanup in cleanups)
+            {
+                cleanup();
+            }
+        };
     }
 
     private async Task OnUiSignInDiscordRequestAsync(IMessagingContext ctx)

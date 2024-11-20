@@ -25,8 +25,9 @@ public sealed class Ui(
     private readonly ConcurrentDictionary<string, Function> sendHandlers = [];
     private readonly ConcurrentDictionary<string, SimpleStateBag> mountBags = [];
     private readonly ConcurrentDictionary<string, SimpleStateBag> unmountBags = [];
-    private readonly ConcurrentDictionary<string, HashSet<Action>> onMountHandlers = [];
+    private readonly ConcurrentDictionary<string, HashSet<Delegate>> onMountHandlers = [];
     private readonly ConcurrentDictionary<string, HashSet<Action>> onUnmountHandlers = [];
+    private readonly ConcurrentDictionary<string, HashSet<Action>> onceUnmountHandlers = [];
     private int focusCounter;
 
     public void Initialize()
@@ -35,7 +36,29 @@ public sealed class Ui(
             "router.mount",
             (string route, bool broadcast) =>
             {
-                InvokeMountHandlers(onMountHandlers, mountBags, route, broadcast);
+                if (mountBags.TryRemove(route, out var bag))
+                {
+                    bag.TaskCompletionSource.SetResult();
+                    bag.Dispose();
+                }
+                if (broadcast && onMountHandlers.TryGetValue(route, out var handlers))
+                {
+                    foreach (var handler in handlers)
+                    {
+                        var ret = handler.Method.Invoke(handler.Target, null);
+                        if (ret is Action action)
+                        {
+                            if (!onceUnmountHandlers.TryGetValue(route, out var onceHandlers))
+                            {
+                                onceUnmountHandlers[route] = [action];
+                            }
+                            else
+                            {
+                                onceHandlers.Add(action);
+                            }
+                        }
+                    }
+                }
             }
         );
 
@@ -43,7 +66,28 @@ public sealed class Ui(
             "router.unmount",
             (string route, bool broadcast) =>
             {
-                InvokeMountHandlers(onUnmountHandlers, unmountBags, route, broadcast);
+                if (unmountBags.TryRemove(route, out var bag))
+                {
+                    bag.TaskCompletionSource.SetResult();
+                    bag.Dispose();
+                }
+                if (broadcast)
+                {
+                    if (onUnmountHandlers.TryGetValue(route, out var handlers))
+                    {
+                        foreach (var handler in handlers)
+                        {
+                            handler();
+                        }
+                    }
+                    if (onceUnmountHandlers.TryRemove(route, out handlers))
+                    {
+                        foreach (var handler in handlers)
+                        {
+                            handler();
+                        }
+                    }
+                }
             }
         );
     }
@@ -668,6 +712,23 @@ public sealed class Ui(
         };
     }
 
+    public Action OnMount(Route route, Func<Action> handler)
+    {
+        if (!onMountHandlers.TryGetValue(route.Value, out var handlers))
+        {
+            handlers = [handler];
+            onMountHandlers[route.Value] = handlers;
+        }
+        else
+        {
+            handlers.Add(handler);
+        }
+        return () =>
+        {
+            OffMount(route, handler);
+        };
+    }
+
     public Action OnMount(Route route, Func<Task> handler)
     {
         return OnMount(
@@ -769,7 +830,7 @@ public sealed class Ui(
         return arr;
     }
 
-    private void OffMount(Route route, Action handler)
+    private void OffMount(Route route, Delegate handler)
     {
         if (!onMountHandlers.TryGetValue(route.Value, out var handlers))
         {
@@ -785,27 +846,6 @@ public sealed class Ui(
             return;
         }
         handlers.Remove(handler);
-    }
-
-    private static void InvokeMountHandlers(
-        ConcurrentDictionary<string, HashSet<Action>> globalHandlers,
-        ConcurrentDictionary<string, SimpleStateBag> localBags,
-        string route,
-        bool broadcast
-    )
-    {
-        if (localBags.TryRemove(route, out var bag))
-        {
-            bag.TaskCompletionSource.SetResult();
-            bag.Dispose();
-        }
-        if (broadcast && globalHandlers.TryGetValue(route, out var handlers))
-        {
-            foreach (var handler in handlers)
-            {
-                handler();
-            }
-        }
     }
 
     private class StateBag(

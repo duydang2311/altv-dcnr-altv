@@ -26,6 +26,7 @@ public interface IUi : IBaseObject
     Task<Effect<None, GenericError>> MountAsync(string route, object? props = null);
     Task<Effect<None, GenericError>> UnmountAsync(string route, object? props = null);
     Action OnMount(Route route, Action handler);
+    Action OnMount(Route route, Func<Action> handler);
     Action OnMount(Route route, Func<Task> handler);
     Action OnUnmount(Route route, Action handler);
     Action OnUnmount(Route route, Func<Task> handler);
