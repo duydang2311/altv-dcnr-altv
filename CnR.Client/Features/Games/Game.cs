@@ -12,12 +12,12 @@ public sealed class Game : IGame
     {
         if (!toggle)
         {
-            if (Interlocked.Increment(ref disabledControlsCounter) > 0 && Alt.GameControlsEnabled)
+            if (Interlocked.Increment(ref disabledControlsCounter) > 0)
             {
                 Alt.GameControlsEnabled = false;
             }
         }
-        else if (Interlocked.Decrement(ref disabledControlsCounter) <= 0 && !Alt.GameControlsEnabled)
+        else if (Interlocked.Decrement(ref disabledControlsCounter) <= 0)
         {
             Alt.GameControlsEnabled = true;
         }
