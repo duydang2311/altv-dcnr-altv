@@ -8,4 +8,6 @@ public sealed record GamemodeSelectionPursuitLobbyDto
 {
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public int ParticipantsCount { get; set; }
+    public int MaxParticipants { get; set; }
 }

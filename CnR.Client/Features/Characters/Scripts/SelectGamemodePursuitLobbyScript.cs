@@ -1,4 +1,6 @@
 using AltV.Community.Messaging.Client.Abstractions;
+using AltV.Net.Client;
+using AltV.Net.Client.Elements.Data;
 using CnR.Client.Common;
 using CnR.Client.Features.Messaging.Abstractions;
 using CnR.Client.Features.Uis.Abstractions;
@@ -17,6 +19,7 @@ public sealed class SelectGamemodePursuitLobbyScript(IUi ui, IEffectfulMessenger
 
     private Action OnUiMount()
     {
+        Alt.OnKeyUp += OnKeyUp;
         return Merge(
             ui.On("gamemode-selection.pursuit.getLobbies", OnUiGetLobbiesAsync),
             ui.On<object>("gamemode-selection.pursuit.getParticipants", (ctx, id) =>
@@ -26,7 +29,19 @@ public sealed class SelectGamemodePursuitLobbyScript(IUi ui, IEffectfulMessenger
                     return Task.CompletedTask;
                 }
                 return OnUiGetParticipantsAsync(ctx, (long)idDouble);
-            })
+            }),
+            ui.On<object>("gamemode-selection.pursuit.joinLobby", (ctx, id) =>
+            {
+                if (id is not double idDouble)
+                {
+                    return;
+                }
+                OnUiJoinLobby(ctx, (long)idDouble);
+            }),
+            () =>
+            {
+                Alt.OnKeyUp -= OnKeyUp;
+            }
         );
     }
 
@@ -48,5 +63,18 @@ public sealed class SelectGamemodePursuitLobbyScript(IUi ui, IEffectfulMessenger
             return;
         }
         ctx.Respond([lobbyId, success]);
+    }
+
+    private void OnUiJoinLobby(IMessagingContext ctx, long lobbyId)
+    {
+        messenger.Publish("gamemode-selection.pursuit.joinLobby", [lobbyId]);
+    }
+
+    private void OnKeyUp(Key key)
+    {
+        if (key == Key.Escape)
+        {
+            _ = ui.UnmountAsync(Route.GamemodeSelection);
+        }
     }
 }

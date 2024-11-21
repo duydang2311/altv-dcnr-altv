@@ -1,23 +1,27 @@
 using AltV.Community.Messaging.Server.Abstractions;
 using AltV.Net.Elements.Entities;
 using CnR.Server.Common;
+using CnR.Server.Features.Characters.Abstractions;
 using CnR.Server.Features.Lobbies.Abstractions;
 using CnR.Server.Features.Lobbies.Pursuits.Abstractions;
 using CnR.Server.Features.Messaging.Abstractions;
+using CnR.Server.Features.Uis.Abstractions;
 using CnR.Shared.Dtos;
+using CnR.Shared.Uis;
 
 namespace CnR.Server.Features.Characters.Scripts;
 
-public sealed class SelectGamemodePursuitLobbyScript(IEffectfulMessenger messenger, ILobbyFactory lobbyFactory) : Script
+public sealed class SelectGamemodePursuitLobbyScript(IEffectfulMessenger messenger, ILobbyFactory lobbyFactory, IUi ui) : Script
 {
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        messenger.On<IPlayer>("gamemode-selection.pursuit.getLobbies", OnGetPursuitLobbies);
-        messenger.On<IPlayer, long>("gamemode-selection.pursuit.getParticipants", OnGetPursuitParticipants);
+        messenger.On<IPlayer>("gamemode-selection.pursuit.getLobbies", OnGetLobbies);
+        messenger.On<IPlayer, long>("gamemode-selection.pursuit.getParticipants", OnGetParticipants);
+        messenger.On<ICharacter, long>("gamemode-selection.pursuit.joinLobby", OnJoinLobby);
         return Task.CompletedTask;
     }
 
-    private void OnGetPursuitLobbies(IMessagingContext<IPlayer> ctx)
+    private void OnGetLobbies(IMessagingContext<IPlayer> ctx)
     {
         ctx.Respond([
             lobbyFactory
@@ -28,12 +32,14 @@ public sealed class SelectGamemodePursuitLobbyScript(IEffectfulMessenger messeng
                 {
                     Id = a.Id,
                     Name = a.Name,
+                    ParticipantsCount = a.GetPlayers().Count,
+                    MaxParticipants = 16
                 })
                 .ToList()
         ]);
     }
 
-    private void OnGetPursuitParticipants(IMessagingContext<IPlayer> ctx, long lobbyId)
+    private void OnGetParticipants(IMessagingContext<IPlayer> ctx, long lobbyId)
     {
         var lobby = lobbyFactory.FindLobby(a => a.Id == lobbyId);
         if (lobby is null || lobby is not IPursuitLobby pursuitLobby)
@@ -41,6 +47,23 @@ public sealed class SelectGamemodePursuitLobbyScript(IEffectfulMessenger messeng
             return;
         }
 
-        ctx.Respond(pursuitLobby.GetPlayers().Select(a => a.Name).ToArray());
+        ctx.Respond([pursuitLobby.GetPlayers().Select(a => a.Name).ToArray()]);
+    }
+
+    private void OnJoinLobby(IMessagingContext<ICharacter> ctx, long lobbyId)
+    {
+        if (lobbyFactory.GetLobbies().Any(a => a.GetPlayers().Contains(ctx.Player)))
+        {
+            return;
+        }
+
+        var lobby = lobbyFactory.FindLobby(a => a.Id == lobbyId);
+        if (lobby is null || lobby is not IPursuitLobby pursuitLobby)
+        {
+            return;
+        }
+
+        var ok = lobby.AddPlayer(ctx.Player);
+        ui.Unmount(ctx.Player, Route.GamemodeSelection);
     }
 }

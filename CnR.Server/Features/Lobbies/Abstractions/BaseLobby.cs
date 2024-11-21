@@ -24,25 +24,23 @@ public abstract class BaseLobby(
 
     public bool AddPlayer(ICharacter player)
     {
-        var added = players.Add(player);
-        if (added != players)
+        if (players.Contains(player))
         {
-            players = added;
-            PlayerAddedEvent.Invoke(this, player);
-            return true;
+            return false;
         }
-        return false;
+        players = players.Add(player);
+        PlayerAddedEvent.Invoke(this, player);
+        return true;
     }
 
     public bool RemovePlayer(ICharacter player)
     {
-        var removed = players.Remove(player);
-        if (removed != players)
+        if (!players.Contains(player))
         {
-            players = removed;
-            PlayerRemovedEvent.Invoke(this, player);
-            return true;
+            return false;
         }
-        return false;
+        players = players.Remove(player);
+        PlayerRemovedEvent.Invoke(this, player);
+        return true;
     }
 }
