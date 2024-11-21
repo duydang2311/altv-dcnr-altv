@@ -53,7 +53,7 @@ public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messeng
     private async Task OnUiSignInDiscordRequestAsync(IMessagingContext ctx)
     {
         var requested = await Try(() => Alt.Discord.RequestOAuth2Token(DiscordAppId))().ConfigureAwait(false);
-        if (requested.TryGetError(out var error, out var bearerToken))
+        if (requested.TryGetError(out var error, out bearerToken))
         {
             Console.WriteLine(error);
             return;
@@ -118,7 +118,10 @@ public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messeng
             {
                 ctx.Respond(["type_mismatch_error"]);
             }
+            return;
         }
+
+        bearerToken = null;
         ctx.Respond([success]);
     }
 
