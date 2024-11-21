@@ -8,7 +8,7 @@ using CnR.Shared.Dtos;
 
 namespace CnR.Server.Features.Characters.Scripts;
 
-public sealed class SelectGamemodeScript(IEffectfulMessenger messenger, ILobbyFactory lobbyFactory) : Script
+public sealed class SelectGamemodePursuitLobbyScript(IEffectfulMessenger messenger, ILobbyFactory lobbyFactory) : Script
 {
     public override Task StartAsync(CancellationToken cancellationToken)
     {

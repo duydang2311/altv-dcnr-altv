@@ -11,7 +11,7 @@ public static partial class ServiceCollectionExtensions
         serviceCollection
             .AddSingleton<ICharacterFactory, CharacterFactory>()
             .AddScript<SpawnCharacterScript>()
-            .AddScript<SelectGamemodeScript>();
+            .AddScript<SelectGamemodePursuitLobbyScript>();
         return serviceCollection;
     }
 }

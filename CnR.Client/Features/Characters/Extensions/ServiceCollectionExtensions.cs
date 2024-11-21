@@ -6,7 +6,9 @@ public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCharacterFeatures(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScript<SelectGamemodeScript>();
+        serviceCollection
+            .AddScript<SelectGamemodeScript>()
+            .AddScript<SelectGamemodePursuitLobbyScript>();
         return serviceCollection;
     }
 }
