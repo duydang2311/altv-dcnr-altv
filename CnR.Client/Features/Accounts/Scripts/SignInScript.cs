@@ -52,18 +52,15 @@ public sealed class SignInScript(IGame game, IUi ui, IEffectfulMessenger messeng
 
     private async Task OnUiSignInDiscordRequestAsync(IMessagingContext ctx)
     {
-        try
+        var requested = await Try(() => Alt.Discord.RequestOAuth2Token(DiscordAppId))().ConfigureAwait(false);
+        if (requested.TryGetError(out var error, out var bearerToken))
         {
-            bearerToken = await Alt.Discord.RequestOAuth2Token(DiscordAppId).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
+            Console.WriteLine(error);
             return;
         }
 
         var getDiscordUser = await GetDiscordUserAsync(bearerToken).ConfigureAwait(false);
-        if (getDiscordUser.TryGetError(out var error, out var user))
+        if (getDiscordUser.TryGetError(out error, out var user))
         {
             Console.WriteLine(error);
             return;
