@@ -52,7 +52,7 @@ public sealed class SetupPursuitLobbyScript(ILobbyCreatedEvent lobbyCreatedEvent
         switch (pursuitLobby.Status)
         {
             case PursuitLobbyStatus.Open:
-                if (pursuitLobby.GetPlayers().Count > 3)
+                if (pursuitLobby.GetPlayers().Count >= 3)
                 {
                     pursuitLobby.Status = PursuitLobbyStatus.Countdown;
                 }
@@ -62,7 +62,23 @@ public sealed class SetupPursuitLobbyScript(ILobbyCreatedEvent lobbyCreatedEvent
         }
     }
 
-    private void OnPlayerRemoved(ILobby lobby, ICharacter character) { }
+    private void OnPlayerRemoved(ILobby lobby, ICharacter character)
+    {
+        if (lobby is not IPursuitLobby pursuitLobby)
+        {
+            return;
+        }
+
+        switch (pursuitLobby.Status)
+        {
+            case PursuitLobbyStatus.Countdown:
+                if (lobby.GetPlayers().Count < 3)
+                {
+                    pursuitLobby.Status = PursuitLobbyStatus.Open;
+                }
+                break;
+        }
+    }
 
     private async Task OnStatusChanged(IPursuitLobby lobby, PursuitLobbyStatus previous, PursuitLobbyStatus current)
     {
@@ -114,11 +130,12 @@ public sealed class SetupPursuitLobbyScript(ILobbyCreatedEvent lobbyCreatedEvent
         lobby.Status = PursuitLobbyStatus.Ongoing;
     }
 
-    private async ValueTask RemoveCountdownTimerAsync(IPursuitLobby lobby)
+    private ValueTask RemoveCountdownTimerAsync(IPursuitLobby lobby)
     {
         if (countdownTimers.TryRemove(lobby, out var timer))
         {
-            await timer.DisposeAsync().ConfigureAwait(false);
+            return timer.DisposeAsync();
         }
+        return ValueTask.CompletedTask;
     }
 }

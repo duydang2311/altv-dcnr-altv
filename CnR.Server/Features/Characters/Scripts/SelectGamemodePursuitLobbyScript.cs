@@ -5,13 +5,11 @@ using CnR.Server.Features.Characters.Abstractions;
 using CnR.Server.Features.Lobbies.Abstractions;
 using CnR.Server.Features.Lobbies.Pursuits.Abstractions;
 using CnR.Server.Features.Messaging.Abstractions;
-using CnR.Server.Features.Uis.Abstractions;
 using CnR.Shared.Dtos;
-using CnR.Shared.Uis;
 
 namespace CnR.Server.Features.Characters.Scripts;
 
-public sealed class SelectGamemodePursuitLobbyScript(IEffectfulMessenger messenger, ILobbyFactory lobbyFactory, IUi ui) : Script
+public sealed class SelectGamemodePursuitLobbyScript(IEffectfulMessenger messenger, ILobbyFactory lobbyFactory) : Script
 {
     public override Task StartAsync(CancellationToken cancellationToken)
     {
@@ -23,20 +21,22 @@ public sealed class SelectGamemodePursuitLobbyScript(IEffectfulMessenger messeng
 
     private void OnGetLobbies(IMessagingContext<IPlayer> ctx)
     {
-        ctx.Respond([
-            lobbyFactory
-                .GetLobbies()
-                .Where(a => a is IPursuitLobby)
-                .Cast<IPursuitLobby>()
-                .Select(a => new GamemodeSelectionPursuitLobbyDto
-                {
-                    Id = a.Id,
-                    Name = a.Name,
-                    ParticipantsCount = a.GetPlayers().Count,
-                    MaxParticipants = 16
-                })
-                .ToList()
-        ]);
+        ctx.Respond(
+            [
+                lobbyFactory
+                    .GetLobbies()
+                    .Where(a => a is IPursuitLobby)
+                    .Cast<IPursuitLobby>()
+                    .Select(a => new GamemodeSelectionPursuitLobbyDto
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        ParticipantsCount = a.GetPlayers().Count,
+                        MaxParticipants = 16
+                    })
+                    .ToList()
+            ]
+        );
     }
 
     private void OnGetParticipants(IMessagingContext<IPlayer> ctx, long lobbyId)
@@ -63,7 +63,13 @@ public sealed class SelectGamemodePursuitLobbyScript(IEffectfulMessenger messeng
             return;
         }
 
-        var ok = lobby.AddPlayer(ctx.Player);
-        ui.Unmount(ctx.Player, Route.GamemodeSelection);
+        if (lobby.AddPlayer(ctx.Player))
+        {
+            messenger.Publish(
+                ctx.Player,
+                "gamemode-selection.pursuit.playerJoined",
+                [new GamemodeSelectionPursuitPlayerJoinedDto { LobbyId = lobbyId, Name = ctx.Player.Name }]
+            );
+        }
     }
 }

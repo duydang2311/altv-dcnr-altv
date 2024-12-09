@@ -43,8 +43,8 @@ public sealed class ServerResource : AsyncResource
                     .AddCharacterFeatures()
                     .AddMessagingFeatures()
                     .AddUiFeatures()
-                    .AddLobbyFeatures()
-                    .AddPursuitLobbyFeatures();
+                    .AddPursuitLobbyFeatures()
+                    .AddLobbyFeatures();
             }
         );
 

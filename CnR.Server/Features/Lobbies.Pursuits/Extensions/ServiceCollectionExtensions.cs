@@ -7,9 +7,7 @@ public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPursuitLobbyFeatures(this IServiceCollection serviceCollection)
     {
-        serviceCollection
-            .AddTransient<PursuitLobbyStatusChangedEvent>()
-            .AddScript<SetupPursuitLobbyScript>();
+        serviceCollection.AddTransient<PursuitLobbyStatusChangedEvent>().AddScript<SetupPursuitLobbyScript>();
         return serviceCollection;
     }
 }
